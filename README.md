@@ -4,6 +4,7 @@
 Install fuse and sqlite3 library before running the file system.
 
 command to build FlatFS: g++ flatFS.cpp  -o flatFS 'pkg-config fuse --cflags --libs' -l sqlite3
+
 command to run FlatFS: ./flatFS -f test (create a directory named test to mount flatfs)
 
 At the start, program will ask for the database location. Please give the location with database name (sql.db). Please allow read and write permissions for the database location path. Database location must be specified from the root.(database location example: /home/navin/Desktop/sql.db)
