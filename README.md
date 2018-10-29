@@ -3,7 +3,7 @@
 
 Install fuse and sqlite3 library before running the file system.
 
-command to build FlatFS: g++ flatFS.cpp  -o flatFS 'pkg-config fuse --cflags --libs' -l sqlite3
+command to build FlatFS: g++ flatFS.cpp  -o flatFS `pkg-config fuse --cflags --libs` -l sqlite3
 
 command to run FlatFS: ./flatFS -f test (create a directory named test to mount flatfs)
 
