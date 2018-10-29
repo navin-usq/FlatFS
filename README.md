@@ -3,7 +3,7 @@
 
 Install fuse and sqlite3 library before running the file system.
 
-command to build FlatFS: g++ flatFS.cpp  -o flatFS 'pkg-config fuse --cflags --libs' -l sqlite3 
+command to build FlatFS: g++ flatFS.cpp  -o flatFS `pkg-config fuse --cflags --libs` -l sqlite3 
 
 (check below link for the error " pkg-config --cflags opencv: No such file or directory " - https://stackoverflow.com/questions/20625096/pkg-config-cflags-opencv-no-such-file-or-directory )
 
