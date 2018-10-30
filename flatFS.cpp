@@ -19,7 +19,7 @@
 #include "flatFSPassThrough.cpp"
 
 //store database location
-char dataBaseLocation[1024];
+char dataBaseLocation[];
 
 //varaiables for flatFs logic
 void *file_buffer;
@@ -28,8 +28,8 @@ char files[10024][1024];
 int fileNums[10024];
 char fileWithNames[10024][1024];
 int num = 1;
-int totalfilenums = 0;
 int totalfiles = 0;
+int totalfilenums = 0;
 int move = 0;
 int isFile = 0;
 int fileReadCount = 0;
@@ -47,16 +47,29 @@ char **splitValuePath;
 int countglobal = 0;
 struct my_struct s;
 
+int defaultCall = 0;
+int allowls = 0;
+
+int getDataFromSQL();
 //Method to know what kind of command user has specified
 static int do_getattr( const char *path, struct stat *st )
+{ 
+	defaultCall++;
+ 	std::cout << "\ncall: " << defaultCall;
+
+if(defaultCall == 28 && allowls == 0)
 {
+	allowls = 1;
+	getDataFromSQL();
+}
+
 	st->st_uid = getuid(); //setting st properties
 	st->st_gid = getgid();
 	st->st_atime = time( NULL );
 	st->st_mtime = time( NULL );
 
 	switch(file_type(path))
-	{
+	{ 
 		case FILE_ROOT: //if ls command is specified
 			st->st_mode = S_IFDIR | 0777;
 			st->st_nlink = 2;
@@ -87,7 +100,10 @@ static int do_getattr( const char *path, struct stat *st )
 
 //method to list all files
 static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi )
-{
+{ 
+	if(allowls == 0)
+		return 0;	
+
 	//variables to count files
 	fileReadCount = 0;
 	int counter=0;
@@ -97,294 +113,37 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 	(void) offset;
 
 	if (file_type(path) == FILE_NAME) //search for a particular file
-	{
-		//pointers for key and value pairs
-		char **keyPath;
-		char **valuePath;
-		int searchCount = 1;
-
-		for(int ii = 0; path[ii] != NULL; ii++) //count number of key value pairs
+	{std::cout << "INN1 " << allowls;
+		findFiles(path, 1, 0);
+		for(int i=0; i<totalfiles; i++)
 		{
-			if(path[ii] == ',')
-					searchCount++;
-		}
-
-		//dynamic memory allocation for the lenght of key value pairs
-		keyPath = (char**)malloc((searchCount + 1) * sizeof(char*));
-		valuePath = (char**)malloc((searchCount + 1) * sizeof(char*));
-
-		//variables to count each key and value length
-		int keylimit = 0;
-		int vallimit = 0;
-		int comlimit = 0;
-		int valRegion = 0;
-		int nSize = 0;
-
-		for(int ii = 2; ii < strlen(path); ii++) //memory allocation for each key and value
-		{
-			if(path[ii] == ':')
+			for(int j=0; j<fileNumsForMoveCount; j++)
 			{
-				keyPath[comlimit] = (char*)malloc(nSize);
-				nSize = 0;
-				valRegion = 1;
-			}
-			else if(path[ii] == ',' || path[ii + 1] == NULL)
-			{
-				if(path[ii + 1] == NULL)
-					nSize++;
-				valuePath[comlimit] = (char*)malloc(nSize);
-				nSize = 0;
-				valRegion = 0;
-				comlimit++;
-			}
-			if(path[ii] != ':' && path[ii] != ',')
-			{
-				nSize++;
-			}
-		}
-
-		comlimit = 0;
-
-		for(int ii = 2; ii < strlen(path); ii++) //saving key and values in array
-		{
-			if(path[ii] == ':')
-			{
-				valRegion = 1;
-				keyPath[comlimit][keylimit] = NULL;
-				keylimit = 0;
-			}
-			else if(path[ii] == ',')
-			{
-				valRegion = 0;
-				valuePath[comlimit][vallimit] = NULL;
-				comlimit++;
-				vallimit = 0;
-			}
-			if((path[ii] != ':' && path[ii] != ',') && valRegion == 0)
-			{
-				keyPath[comlimit][keylimit] = path[ii];
-				keylimit++;
-			}
-			else if((path[ii] != ':' && path[ii] != ',') && valRegion == 1)
-			{
-				valuePath[comlimit][vallimit] = path[ii];
-				vallimit++;
-			}
-		}
-
-		valuePath[comlimit][vallimit] = NULL;
-		comlimit++;
-
-		for(int j=0; j<countglobal; ++j) //free struc object memory for getting information from database
-		{
-			free(s.argv1[j]);
-			s.argv1[j] = NULL;
-			free(s.argv2[j]);
-			s.argv2[j] = NULL;
-			free(s.argv3[j]);
-			s.argv3[j] = NULL;
-		}
-
-		countglobal = 0;
-
-		sqlite3 *db;
-	  char *err_msg = 0;
-
-	  int rc; //opening database
-		if (FILE *file = fopen(dataBaseLocation, "r"))
-		{
-        fclose(file);
-				rc = sqlite3_open(dataBaseLocation, &db);
-    }
-
-		if (rc != SQLITE_OK) //checking databse exist
-		{
-			std::cout << "open:error_file\n";
-			sqlite3_close(db);
-	    return 0;
-	  }
-		char *sql;
-	  sql = "SELECT * FROM DataForFiles"; //query to select all key value pair records
-	  rc = sqlite3_exec(db, sql, callback, 0, &err_msg); //database call
-
-		if (rc != SQLITE_OK ) //checking query execution
-		{
-			std::cout << "open:error_data_file\n";
-	    sqlite3_close(db);
-	    return 0;
-	  }
-	  else
-		{
-			int iterationCount = 0;
-			char *fileName;
-			int countfileNames = 0;
-			int n=0;
-			int iteration = 0;
-			int recordlocation = 0;
-
-			for(int jj=0; jj<totalfiles; jj++) //comparing database key,value pair with the user input
-			{
-				for(int ii=0; ii<countglobal; ii++)
-				{
-					if(strcmp(files[jj], s.argv1[ii]) == 0)
-					{
-						for(int ij = 0; ij < comlimit; ij++)
-						{
-							if((strcmp(keyPath[ij],s.argv2[ii]) == 0) && (strcmp(valuePath[ij],s.argv3[ii]) == 0))
-							{
-								iterationCount++;
-							}
-						}
-					}
+				if(strcmp(fileNumsForMove[j], files[i]) == 0)
+				{std::cout << " " << i << "\n";
+					filler(buffer, inMemoryNames[i], NULL, 0);
 				}
-				//print start
-				if(iterationCount == comlimit) //getting actual files for the search based on comparison result
-				{
-					for(int ii=0; ii<countglobal; ii++)
-					{
-						if(strcmp(files[jj], s.argv1[ii]) == 0)
-						{
-							n = n + strlen(s.argv2[ii]) + strlen(s.argv3[ii]) + 3;
-							iteration++;
-						}
-					}
-					fileName = (char*)malloc(n);
-					int x = 0;
-					for(int qq=0; qq<countglobal; qq++)
-					{
-						if(strcmp(files[jj], s.argv1[qq]) == 0)
-						{
-							if(x != 0)
-							{
-								fileName[x] = ',';
-								x++;
-							}
-							for(int y=0; y<strlen(s.argv2[qq]); y++,x++)
-							{
-								fileName[x] = s.argv2[qq][y];
-							}
-							fileName[x] = ':';
-							x++;
-							for(int y=0; y<strlen(s.argv3[qq]); y++,x++)
-							{
-								fileName[x] = s.argv3[qq][y];
-							}
-						}
-					}
-					fileName[x] = NULL;
-					isFile = 1;
-					filler(buffer, fileName, NULL, 0); //printing the file name to the buffer
-					recordlocation = recordlocation + iteration;
-					iteration = 0;
-					free(fileName);
-					fileName = NULL;
-					//print end
-				}
-				iterationCount = 0;
 			}
 		}
-
-		sqlite3_close(db); // closiing database
+		for(int jj=0; jj<fileNumsForMoveCount; jj++) //free array memory
+		{
+			for(int kk=0; kk<strlen(fileNumsForMove[jj]); kk++)
+			{
+				fileNumsForMove[jj][kk] = NULL;
+			}
+		}
+		fileNumsForMoveCount = 0;
 
 		return 0;
 	}
 	else if(file_type(path) == FILE_ROOT || file_type(path) == FILE_LIST) //to list all files in the directory
-	{
-		for(int j=0; j<countglobal; ++j) //free memory for database key,value pairs
-		{
-			free(s.argv1[j]);
-			s.argv1[j] = NULL;
-			free(s.argv2[j]);
-			s.argv2[j] = NULL;
-			free(s.argv3[j]);
-			s.argv3[j] = NULL;
-		}
-
-		countglobal = 0;
-
-		sqlite3 *db;
-    char *err_msg = 0;
-
-    int rc;
-		//opening database connection
-		if (FILE *file = fopen(dataBaseLocation, "r"))
-		{
-        fclose(file);
-				rc = sqlite3_open(dataBaseLocation, &db);
-    }
-
-    if (rc != SQLITE_OK) //checking databse connection
-		{
-				std::cout << "open:error\n";
-        return 0;
-    }
-
-		char *sql;
-    sql = "SELECT * FROM DataForFiles"; //selecting key value pairs
-    rc = sqlite3_exec(db, sql, callback, 0, &err_msg); //database operations
-
-    if (rc != SQLITE_OK ) //checking databse results
-		{
-    		sqlite3_close(db);
-      	return 0;
-    }
-    else
-		{
-				char *fileName;
-				int countfileNames = 0;
-				int n=0;
-				int iteration = 0;
-				int recordlocation = 0;
-
-				for(int jj=0; jj<totalfiles; jj++) //locating all key value pairs
-				{
-					for(int ii=0; ii<countglobal; ii++)
-					{
-						if(strcmp(files[jj], s.argv1[ii]) == 0)
-						{
-							n = n + strlen(s.argv2[ii]) + strlen(s.argv3[ii]) + 3;
-							iteration++;
-						}
-					}
-					fileName = (char*)malloc(n);
-
-					int x = 0;
-					for(int qq=0; qq<countglobal; qq++)
-					{
-						if(strcmp(files[jj], s.argv1[qq]) == 0)
-						{
-							if(x != 0)
-							{
-								fileName[x] = ',';
-								x++;
-							}
-							for(int y=0; y<strlen(s.argv2[qq]); y++,x++)
-							{
-								fileName[x] = s.argv2[qq][y];
-							}
-							fileName[x] = ':';
-							x++;
-							for(int y=0; y<strlen(s.argv3[qq]); y++,x++)
-							{
-								fileName[x] = s.argv3[qq][y];
-							}
-						}
-					}
-					fileName[x] = NULL;
-					isFile = 1;
-					filler(buffer, fileName, NULL, 0); //printing key values pairs using buffer
-					recordlocation = recordlocation + iteration;
-					iteration = 0;
-					free(fileName);
-					fileName = NULL;
-				}
-
+	{std::cout << "INN2 " << allowls;
+		for(int r=0; r<totalfiles; r++)
+			{isFile = 1;
+				filler(buffer, inMemoryNames[r], NULL, 0);
 			}
 
-			sqlite3_close(db); //close database connection
-
-			return 0;
-		}
+	}
 
 		return 0;
 }
@@ -394,7 +153,7 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 {
 	char compareName[1024];
 	strncpy(compareName, path , 1024);
-	if(findFiles(path, 0, 1) == 1) // check already file exist
+	if(findFiles(path, 0, 1) == 1 && isFileFromCreate == 1) // check already file exist
 	{
 		std::cout << "\nFile to touch already exist\n";
 		return -ENOSPC;
@@ -404,7 +163,31 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 	char attr[1024];
 	char val[1024];
 	int n=0,l=0,fileNum;
-	totalfiles++;
+	
+		char fname[100];
+		int x=0;
+		for(int w=0; w<sizeof(fname); w++)
+		{
+			fname[w] = NULL;
+		}
+		for(int w=1;path[w]!=NULL;w++)
+		{
+			fname[x] = path[w];
+			x++;
+		}
+			fname[x] = NULL;
+		strncpy(inMemoryNames[totalfiles], fname, 100);
+		std::cout << "\nname: "	<< inMemoryNames[totalfiles];
+		std::cout << " " << totalfiles;
+
+	if(isFileFromCreate == 0)
+	{
+		fileNum = num;
+		num++;
+	}
+	else
+	{
+
 	for(int i=1; i<strlen(path); i++) //separate first key,value pairs
 	{
 		if(path[i] != ':')
@@ -432,15 +215,15 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 	val[l] = '\0';
 
 	fileNum = do_sql(0, attr, val); //call sql function to store key,value pair
+	}
 
-	static int file_counter = 0;
 	int res;
-	if(file_counter >= 10024)
+	if(totalfiles >= 10024)
 	{
 		return -ENOSPC;
 	}
 
-	fileNums[file_counter] = fileNum;
+	fileNums[totalfiles] = fileNum;
 	//file name - number to string conversion
 	int test1 = fileNum;
 	int test2 = test1, u =0, ascii = 48, test3 = 0;
@@ -482,12 +265,12 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 	fileName[u] = '\0';
 	//
 
-	strncpy(files[file_counter], fileName , 1024);
-	file_counter++;
+	strncpy(files[totalfiles], fileName , 1024);
+	totalfiles++;
 
 	int w = n+l+2;
 
-	while(path[w] != '\0') //separate other key,value pairs
+	while(path[w] != '\0' && isFileFromCreate == 1) //separate other key,value pairs
 	{
 		n=l=0;
 		strcpy(attr,"");
@@ -671,6 +454,15 @@ static int do_rename (const char *path1, const char *path2)
 					if(strcmp(files[i], fileNumsForMove[fileNumsForMoveCount]) == 0)
 					{
 						strncpy(fileWithNames[i], pathToAdd, 1024);
+		char fname[24];
+		int x=0;
+		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
+		{
+			fname[x] = fileWithNames[i][wx];
+			x++;
+		}
+			fname[x] = NULL;
+		strncpy(inMemoryNames[i], fname, 24);	
 						break;
 					}
 				} //modifiy file based on the new spec
@@ -742,6 +534,158 @@ static int do_rename (const char *path1, const char *path2)
 
 	return 0;
 }
+
+
+int getDataFromSQL()
+{ 
+	for(int j=0; j<countglobal; ++j) //free memory for database key,value pairs
+		{
+			free(s.argv1[j]);
+			s.argv1[j] = NULL;
+			free(s.argv2[j]);
+			s.argv2[j] = NULL;
+			free(s.argv3[j]);
+			s.argv3[j] = NULL;
+		}
+
+		countglobal = 0;
+
+		sqlite3 *db;
+    char *err_msg = 0;
+
+    int rc;
+		//opening database connection
+		if (FILE *file = fopen(dataBaseLocation, "r"))
+		{
+        fclose(file);
+				rc = sqlite3_open(dataBaseLocation, &db);
+    }
+
+    if (rc != SQLITE_OK) //checking databse connection
+		{
+				std::cout << "open:error\n";
+        return 0;
+    }
+
+		char *sql;
+    sql = "SELECT * FROM DataForFiles"; //selecting key value pairs
+    rc = sqlite3_exec(db, sql, callback, 0, &err_msg); //database operations
+
+    if (rc != SQLITE_OK ) //checking databse results
+		{
+    		sqlite3_close(db);
+      	return 0;
+    }
+    else 
+		{
+			char *fileName;
+				int countfileNames = 0;
+				int n=0;
+				int iteration = 0;
+
+				for(int jj=1; jj<=countglobal; jj++) //locating all key value pairs
+				{
+	char fileNumName[1024];
+	static int file_counter = 0;
+
+	
+	int fileNum = num;
+	//file name - number to string conversion
+	int test1 = fileNum;
+	int test2 = test1, u =0, ascii = 48, test3 = 0;
+	float numberOfZero = 0;
+	int numCount = -1;
+	while(test1 != 0)
+	{
+		test2 = test1 % 10;
+		test1 = test1 / 10;
+		if(test3 == 0)
+		{
+			test3 = test2;
+		}
+		else
+		{
+			test3 = test3 * 10;
+			test3 = test3 + test2;
+		}
+	}
+	test1 = test2 = test3;
+	while(test1 != 0)
+	{
+		numCount++;
+		test2 = test1 % 10;
+		test1 = test1 / 10;
+		for(int i=0; i!=test2; i++)
+		{
+			ascii++;
+		}
+		fileNumName[u] = ascii;
+		ascii = 48;
+		u++;
+	}
+	for(int ww=0; ww < (floor(log10 (abs(fileNum))) - numCount); ww++)
+	{
+		fileNumName[u] = 48;
+		u++;
+	}
+	fileNumName[u] = '\0';
+	//
+					for(int ii=0; ii<countglobal; ii++)
+					{
+						if(strcmp(fileNumName, s.argv1[ii]) == 0)
+						{
+							n = n + strlen(s.argv2[ii]) + strlen(s.argv3[ii]) + 3;
+							iteration++;
+						}
+					}
+					if(iteration == 0)
+					{ 	
+						break;
+					}
+					fileName = (char*)malloc(n + 1);
+					
+					int x = 0;
+					fileName[x] = '/';
+					x++;
+					for(int qq=0; qq<countglobal; qq++)
+					{
+						if(strcmp(fileNumName, s.argv1[qq]) == 0)
+						{
+							if(x != 1)
+							{
+								fileName[x] = ',';
+								x++;
+							}
+							for(int y=0; y<strlen(s.argv2[qq]); y++,x++)
+							{
+								fileName[x] = s.argv2[qq][y];
+							}
+							fileName[x] = ':';
+							x++;
+							for(int y=0; y<strlen(s.argv3[qq]); y++,x++)
+							{
+								fileName[x] = s.argv3[qq][y];
+							}
+						}
+					}
+					fileName[x] = NULL;
+			mode_t mode = S_IFREG;
+			do_create(fileName,mode,NULL);
+			isFileFromCreate=0;
+				}
+
+			}
+
+			sqlite3_close(db); //close database connection
+
+	std::cout << "Totalfiles: " << totalfiles;
+
+	isFileFromCreate = 1;
+			return 0;
+
+
+}
+
 
 int main( int argc, char *argv[] )
 {
