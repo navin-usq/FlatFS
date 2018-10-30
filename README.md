@@ -1,6 +1,5 @@
 # FlatFS
 
-
 Install fuse and sqlite3 library before running the file system.
 
 command to build FlatFS: g++ flatFS.cpp  -o flatFS 'pkg-config fuse --cflags --libs' -l sqlite3 
@@ -8,6 +7,8 @@ command to build FlatFS: g++ flatFS.cpp  -o flatFS 'pkg-config fuse --cflags --l
 (check below link for the error " pkg-config --cflags opencv: No such file or directory " - https://stackoverflow.com/questions/20625096/pkg-config-cflags-opencv-no-such-file-or-directory )
 
 command to run FlatFS: ./flatFS -f test (create a directory named test to mount flatfs)
+
+NOTE: Please ignore errors shown in the Mounted directory(test) while executing commands (Example: while executing touch command it may show some error but it is from the HFS - just ignore it). Only consider error log in terminal where you run the FlatFS. This terminal will also show some log info. 
 
 At the start, program will ask for the database location. Please give the location with database name (sql.db). Please allow read and write permissions for the database location path. Database location must be specified from the root.(database location example: /home/navin/Desktop/sql.db)
 
