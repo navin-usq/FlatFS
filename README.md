@@ -14,9 +14,10 @@ At the start, program will ask for the database location. Please give the locati
 Features Implemented: (Open the Mounted Directory - "test" in Terminal and execute the commands)
 
 1. Creating files using "touch" command (example: touch 'unit1:change1,unit2:change2')
-2. Searching using "ls ?" command (example: ls '?unit1:change1'). You can also list all files by simply specifying "ls ?" (performs similar to "ls")
-3. Add spec to files using "mv" command (example: mv 'unit1:change1,unit2:change2' '+unit3:change3')
-4. Delete spec from the files using "mv" command (example: mv 'unit1:change1,unit2:change2,unit3:change3' '_unit3:change3')
-5. Replace spec for a file using "mv" command (example: mv 'unit1:change1,unit2:change2,unit3:change3' '<unit5:change5')
-6. Adding spec to multiple files using "mv" command (example: mv '?unit5:change5' '+unit7:change7'). This command will search for all files containg spec 'unit5:change5' and add the spec 'unit7:change7' if not exist.
-7. Deleteing spec from multiple files using "mv" command (example: mv '?unit5:change5' '_unit7:change7'). This command will search for all files containg spec 'unit5:change5' and delete the spec 'unit7:change7' if exist.
+2. Use "ls ?" to list all files created.
+3. Searching using "ls ?" command (example: ls '?unit1:change1'). You can also list all files by simply specifying "ls ?" (performs similar to "ls")
+4. Add spec to files using "mv" command (example: mv 'unit1:change1,unit2:change2' '+unit3:change3')
+5. Delete spec from the files using "mv" command (example: mv 'unit1:change1,unit2:change2,unit3:change3' '_unit3:change3')
+6. Replace spec for a file using "mv" command (example: mv 'unit1:change1,unit2:change2,unit3:change3' '<unit5:change5')
+7. Adding spec to multiple files using "mv" command (example: mv '?unit5:change5' '+unit7:change7'). This command will search for all files containg spec 'unit5:change5' and add the spec 'unit7:change7' if not exist.
+8. Deleteing spec from multiple files using "mv" command (example: mv '?unit5:change5' '_unit7:change7'). This command will search for all files containg spec 'unit5:change5' and delete the spec 'unit7:change7' if exist.
