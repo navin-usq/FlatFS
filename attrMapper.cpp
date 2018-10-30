@@ -1,7 +1,11 @@
 
 static int file_type(const char *path) //function to find type of user file command
 {
-	if(isFileFromCreate != 0) //file create command
+	if(path[0] == '/' && path[1] == '?' && path[2] !=NULL) //file search command
+	{
+		return FILE_NAME;
+	}
+	else if(isFileFromCreate != 0) //file create command
 	{
 		if(isFileFromCreate == 2)
 		{
@@ -36,10 +40,6 @@ static int file_type(const char *path) //function to find type of user file comm
 	else if(strcmp(path, "/?") == 0) //file list command
 	{
 		return FILE_LIST;
-	}
-	else if(path[0] == '/' && path[1] == '?' && path[2] !=NULL) //file search command
-	{
-		return FILE_NAME;
 	}
 	else if((path[0] == '/' && path[1] =='?') || move == 1) //query spec command
 	{
