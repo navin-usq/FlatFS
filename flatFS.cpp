@@ -670,7 +670,8 @@ int getDataFromSQL()
 					}
 					fileName[x] = NULL;
 			mode_t mode = S_IFREG;
-			do_create(fileName,mode,NULL);
+			if(x > 1)
+				do_create(fileName,mode,NULL);
 			isFileFromCreate=0;
 				}
 
