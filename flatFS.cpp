@@ -554,15 +554,16 @@ int getDataFromSQL()
     char *err_msg = 0;
 
     int rc = 0;
+	int inn = 0;
 		//opening database connection
 		if (FILE *file = fopen(dataBaseLocation, "r"))
 		{
         fclose(file);
-			rc = 1;
-				//rc = sqlite3_open(dataBaseLocation, &db);
+			inn = 1;
+				rc = sqlite3_open(dataBaseLocation, &db);
     }
 
-    if (rc == 0) //checking databse connection
+    if (inn == 0) //checking databse connection
 		{
 				std::cout << "open:error\n";
 	    isFileFromCreate = 1;
@@ -573,7 +574,7 @@ int getDataFromSQL()
     sql = "SELECT * FROM DataForFiles"; //selecting key value pairs
     rc = sqlite3_exec(db, sql, callback, 0, &err_msg); //database operations
 
-    if (rc == 0 ) //checking databse results
+    if (inn == 0 ) //checking databse results
 		{
     		sqlite3_close(db);
       	return 0;
