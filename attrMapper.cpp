@@ -1,3 +1,4 @@
+char inMemoryNames[10024][100];
 
 static int file_type(const char *path) //function to find type of user file command
 {
@@ -5,8 +6,8 @@ static int file_type(const char *path) //function to find type of user file comm
 	{
 		return FILE_NAME;
 	}
-	else if(isFileFromCreate != 0) //file create command
-	{
+	/*else if(isFileFromCreate != 0) //file create command
+	{std::cout << "inn2";
 		if(isFileFromCreate == 2)
 		{
 			isFileFromCreate = 0;
@@ -16,7 +17,7 @@ static int file_type(const char *path) //function to find type of user file comm
 		return FILE_REG;
 	}
 	else if(isFile == 1 && strcmp(path, "/?") != 0) //file create  command
-	{
+	{std::cout << "inn3";
 		int allowReg = 0;
 		for(int i=0; i<strlen(path); i++)
 		{
@@ -32,7 +33,7 @@ static int file_type(const char *path) //function to find type of user file comm
 		}
 		else
 			FILE_NONE;
-	}
+	}*/
 	else if (strcmp(path, "/") == 0)//file list command from root
 	{
 		return FILE_ROOT;
@@ -66,19 +67,15 @@ static int file_type(const char *path) //function to find type of user file comm
 }
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName) //store databse value to struct object array
-{
-
+{ 
 	NotUsed = 0;
 
 	if(countglobal == 0) //allocate memory
 	{
-		memset(&s, 0, sizeof(s));
-		s.argv1 = (char**)malloc((totalfilenums + 1) * sizeof(char*));
-		s.argv1[totalfilenums] = NULL;
-		s.argv2 = (char**)malloc((totalfilenums + 1) * sizeof(char*));
-		s.argv2[totalfilenums] = NULL;
-		s.argv3 = (char**)malloc((totalfilenums + 1) * sizeof(char*));
-		s.argv3[totalfilenums] = NULL;
+		memset(&s, 0, sizeof(s)); 
+		s.argv1 = (char**)malloc((10500) * sizeof(char*));
+		s.argv2 = (char**)malloc((10500) * sizeof(char*));
+		s.argv3 = (char**)malloc((10500) * sizeof(char*));
 	}
 
 	int i=0;
