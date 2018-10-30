@@ -454,7 +454,7 @@ static int do_rename (const char *path1, const char *path2)
 					if(strcmp(files[i], fileNumsForMove[fileNumsForMoveCount]) == 0)
 					{
 						strncpy(fileWithNames[i], pathToAdd, 1024);
-		char fname[24];
+		char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
 		{
@@ -462,7 +462,7 @@ static int do_rename (const char *path1, const char *path2)
 			x++;
 		}
 			fname[x] = NULL;
-		strncpy(inMemoryNames[i], fname, 24);	
+		strncpy(inMemoryNames[i], fname, 100);	
 						break;
 					}
 				} //modifiy file based on the new spec
