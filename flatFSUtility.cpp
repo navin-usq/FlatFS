@@ -182,7 +182,7 @@ static int getFileNameForQuerySpec(int pathId)
 //check file already exist for add spec
 static int checkFileExistForAddSpec(const char *oldpath, const char *newpath, int pathId)
 {
-	char compareName[1024];
+	char compareName[75];
 	int len = 0;
 	compareName[len] = '/';
 	len++;
@@ -370,7 +370,7 @@ static int checkSpecExistForAddSpec(const char *oldpath, const char *newpath)
 	}
 	pathLimit = splitKeyValuePairLimit;
 
-	char trimNewPath[1024];
+	char trimNewPath[75];
 	int we=0;
 	trimNewPath[we] = '/';
 	we++;
@@ -450,7 +450,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 	char **keyPath;
 	char **valuePath;
 	int pathLimit;
-	char pathToSend[1024];
+	char pathToSend[75];
 	char **keyPathDelete;
 	char **valuePathDelete;
 	int pathDeleteLimit;
@@ -577,7 +577,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 	else
 	{
 		iterationCount = 0;
-		char newPath[1024];
+		char newPath[75];
 		int newSpecLimit = 0;
 
 		newPath[newSpecLimit] = '/';
@@ -655,9 +655,9 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 //add or delete file spec
 static int addOrDeleteFileSpec(const char *path, int isDeleteSpec, int pathId)
 {
-	char fileName[1024];//initialize variables
-	char attr[1024];
-	char val[1024];
+	char fileName[75];//initialize variables
+	char attr[75];
+	char val[75];
 	int n=0,l=0,fileNum;
 	for(int i=2; i<strlen(path); i++) //count key,value pairs to add or delete
 	{
