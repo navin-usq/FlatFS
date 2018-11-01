@@ -1,7 +1,7 @@
 
 //find files in the database
-char inMemoryKey[10024][24];
-char inMemoryValue[10024][24];
+char inMemoryKey[10024][75];
+char inMemoryValue[10024][75];
 int inMemoryLength = 0;
 
 //find files in the database
