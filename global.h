@@ -24,7 +24,7 @@ extern int isFileFromCreate;
 
 extern char fileNumsForMove[10024][75]; //variables to perform query specs
 extern int fileNumsForMoveCount;
-extern char querySpecFileName[1024];
+extern char querySpecFileName[75];
 extern int splitKeyValuePairLimit;
 extern char **splitKeyPath;
 extern char **splitValuePath;
