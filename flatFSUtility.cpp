@@ -1,5 +1,10 @@
 
 //find files in the database
+char inMemoryKey[10024][24];
+char inMemoryValue[10024][24];
+int inMemoryLength = 0;
+
+//find files in the database
 static int findFiles(const char *path, int isQuerySpec, int isFileExist)
 {
 			char **keyPath;
@@ -77,97 +82,75 @@ static int findFiles(const char *path, int isQuerySpec, int isFileExist)
 			valuePath[comlimit][vallimit] = NULL;
 			comlimit++;
 
-			for(int j=0; j<countglobal; ++j) //free memory for the struct s object
+			for(int i=0; i<totalfiles; i++)
 			{
-				free(s.argv1[j]);
-				s.argv1[j] = NULL;
-				free(s.argv2[j]);
-				s.argv2[j] = NULL;
-				free(s.argv3[j]);
-				s.argv3[j] = NULL;
-			}
-
-			countglobal = 0;
-
-			sqlite3 *db;
-	    char *err_msg = 0;
-
-			int rc; //database connectivity
-			if (FILE *file = fopen(dataBaseLocation, "r"))
-			{
-					fclose(file);
-					rc = sqlite3_open(dataBaseLocation, &db);
-			}
-
-			if (rc != SQLITE_OK) //check connection to database
-			{
-				sqlite3_close(db);
-				return 0;
-			}
-			char *sql;
-
-	    sql = "SELECT * FROM DataForFiles"; //query to select all data
-
-	    rc = sqlite3_exec(db, sql, callback, 0, &err_msg); //perform execution of query
-
-			if (rc != SQLITE_OK ) //check execution
-			{
-	      sqlite3_free(err_msg);
-	      sqlite3_close(db);
-				if(isFileExist)
-					return 0;
-	      return 1;
-	    }
-	    else
-			{
-		  	int iterationCount = 0;
-				char *fileName;
-				int countfileNames = 0;
-				int n=0;
-				int iteration = 0;
-				int recordlocation = 0;
-				int keyValuePairCount = 0;
-
-				for(int jj=0; jj<totalfiles; jj++) //compare key,value pairs with database values
+				int inMemoryCount = 1;
+				for(int ii = 0; fileWithNames[i][ii] != NULL; ii++) //count key value pairs
 				{
-					for(int ii=0; ii<countglobal; ii++)
+					if(fileWithNames[i][ii] == ',')
+						inMemoryCount++;
+				}
+
+				int inMemoryKeyLength = 0;
+				int inMemoryValueLength = 0;
+				int iterationCount = 0;
+				int w = 1;
+
+				for(int k=0; k<inMemoryCount; k++)
+				{
+					while(fileWithNames[i][w]!=':')
 					{
-						if(strcmp(files[jj], s.argv1[ii]) == 0)
+						inMemoryKey[inMemoryLength][inMemoryKeyLength] = fileWithNames[i][w];
+						w++;
+						inMemoryKeyLength++;
+					}
+					inMemoryKey[inMemoryLength][inMemoryKeyLength] = NULL;
+					w++;
+					while(fileWithNames[i][w] != ',' && fileWithNames[i][w] != NULL)
+					{
+						inMemoryValue[inMemoryLength][inMemoryValueLength] = fileWithNames[i][w];
+						w++;
+						inMemoryValueLength++;
+					}
+					inMemoryValue[inMemoryLength][inMemoryValueLength] = NULL;
+					inMemoryLength++;
+					w++;
+
+					inMemoryKeyLength = 0;
+					inMemoryValueLength = 0;
+				}
+//std::cout << path  << " " << inMemoryValue[0] << " " << inMemoryKey[0] << "\n";
+				for(int ii=0; ii<inMemoryLength; ii++)
+				{
+						for(int ij = 0; ij < comlimit; ij++)
 						{
-							keyValuePairCount++;
-							for(int ij = 0; ij < comlimit; ij++)
+							if((strcmp(keyPath[ij],inMemoryKey[ii]) == 0) && (strcmp(valuePath[ij],inMemoryValue[ii]) == 0))
 							{
-								if((strcmp(keyPath[ij],s.argv2[ii]) == 0) && (strcmp(valuePath[ij],s.argv3[ii]) == 0))
-								{
-									iterationCount++;
-								}
+								iterationCount++;
 							}
 						}
-					}
-						//print start
-					if(iterationCount == comlimit && isQuerySpec == 0 &&
-					keyValuePairCount == comlimit && isFileExist == 1) //file exist in database if condition is true
-					{
-						return 1;
-					}
-					if(iterationCount == comlimit && isQuerySpec == 1 && isFileExist == 0) // save file in a array if it is a query spec
-					{
-						strncpy(fileNumsForMove[fileNumsForMoveCount], files[jj] , 1024);
-						fileNumsForMoveCount++;
-					}
-					else if(iterationCount == comlimit && isQuerySpec == 0 &&
-					keyValuePairCount == comlimit && isFileExist == 0) // save file toarray if it is a add spec
-					{
-						strncpy(fileNumsForMove[fileNumsForMoveCount], files[jj] , 1024);
-					}
-					iterationCount = 0;
-					keyValuePairCount = 0;
-						//print end
 				}
+
+					//print start
+				if(iterationCount == comlimit && isQuerySpec == 0 &&
+				inMemoryLength == comlimit && isFileExist == 1) //file exist in database if condition is true
+				{
+					inMemoryLength = 0;
+					return 1;
+				}
+				if(iterationCount == comlimit && isQuerySpec == 1 && isFileExist == 0) // save file in a array if it is a query spec
+				{
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 24);
+					fileNumsForMoveCount++;
+				}
+				else if(iterationCount == comlimit && isQuerySpec == 0 && isFileExist == 0) // save file in a array if it is not a query spec
+				{
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 24);
+				}
+				inMemoryLength = 0;
 			}
 
-		sqlite3_close(db); // terminate database connection
-		return 0;
+			return 0;
 }
 
 //get each file name for query spec
