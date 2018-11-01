@@ -152,13 +152,13 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 {
 	char compareName[75];
-	strncpy(compareName, path , 1024);
+	strncpy(compareName, path , 75);
 	if(findFiles(path, 0, 1) == 1 && isFileFromCreate == 1) // check already file exist
 	{
 		std::cout << "\nFile to touch already exist\n";
 		return -ENOSPC;
 	}
-	strncpy(fileWithNames[totalfiles], path , 1024);
+	strncpy(fileWithNames[totalfiles], path , 75);
 	char fileName[75];
 	char attr[75];
 	char val[75];
@@ -265,7 +265,7 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 	fileName[u] = '\0';
 	//
 
-	strncpy(files[totalfiles], fileName , 1024);
+	strncpy(files[totalfiles], fileName , 75);
 	totalfiles++;
 
 	int w = n+l+2;
@@ -453,7 +453,7 @@ static int do_rename (const char *path1, const char *path2)
 				{
 					if(strcmp(files[i], fileNumsForMove[fileNumsForMoveCount]) == 0)
 					{
-						strncpy(fileWithNames[i], pathToAdd, 1024);
+						strncpy(fileWithNames[i], pathToAdd, 75);
 		char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
