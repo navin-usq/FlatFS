@@ -24,9 +24,9 @@ char dataBaseLocation[];
 //varaiables for flatFs logic
 void *file_buffer;
 size_t file_size;
-char files[10024][1024];
+char files[10024][75];
 int fileNums[10024];
-char fileWithNames[10024][1024];
+char fileWithNames[10024][75];
 int num = 1;
 int totalfiles = 0;
 int totalfilenums = 0;
@@ -36,9 +36,9 @@ int fileReadCount = 0;
 int isFileFromCreate = 0;
 
 //arrays and integers for spliting the input string into key value pairs
-char fileNumsForMove[10024][1024];
+char fileNumsForMove[10024][75];
 int fileNumsForMoveCount = 0;
-char querySpecFileName[1024];
+char querySpecFileName[75];
 int splitKeyValuePairLimit = 0;
 char **splitKeyPath;
 char **splitValuePath;
@@ -151,7 +151,7 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 //creating a file
 static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 {
-	char compareName[1024];
+	char compareName[75];
 	strncpy(compareName, path , 1024);
 	if(findFiles(path, 0, 1) == 1 && isFileFromCreate == 1) // check already file exist
 	{
@@ -159,9 +159,9 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 		return -ENOSPC;
 	}
 	strncpy(fileWithNames[totalfiles], path , 1024);
-	char fileName[1024];
-	char attr[1024];
-	char val[1024];
+	char fileName[75];
+	char attr[75];
+	char val[75];
 	int n=0,l=0,fileNum;
 	
 		char fname[100];
@@ -396,7 +396,7 @@ static int do_rename (const char *path1, const char *path2)
 	}
 	else if(path1[1] != NULL && path2[1] == '<') //if it is a file speac and a replace spec
 	{
-		char pathToCheck[1024];
+		char pathToCheck[75];
 		int qw = 0;
 		pathToCheck[qw] = '/';
 		qw++;
@@ -424,8 +424,8 @@ static int do_rename (const char *path1, const char *path2)
 			}
 			else
 			{
-				char pathToDelete[1024];
-				char pathToAdd[1024];
+				char pathToDelete[75];
+				char pathToAdd[75];
 				qw = 0;
 				pathToDelete[qw] = '/';
 				qw++;
@@ -588,7 +588,7 @@ int getDataFromSQL()
 
 				for(int jj=1; jj<=countglobal; jj++) //locating all key value pairs
 				{
-	char fileNumName[1024];
+	char fileNumName[75];
 	static int file_counter = 0;
 
 	
