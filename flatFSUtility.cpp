@@ -165,7 +165,7 @@ static int getFileNameForQuerySpec(int pathId)
 	{
 		if(strcmp(fileNumsForMove[pathId], files[i]) == 0)
 		{
-			strncpy(querySpecFileName, fileWithNames[i], 1024);
+			strncpy(querySpecFileName, fileWithNames[i], 75);
 		char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
@@ -209,7 +209,7 @@ static int checkFileExistForAddSpec(const char *oldpath, const char *newpath, in
 	{
 		if(strcmp(files[i], fileNumsForMove[pathId]) == 0)
 		{
-			strncpy(fileWithNames[i], compareName, 1024);
+			strncpy(fileWithNames[i], compareName, 75);
 		char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
@@ -634,7 +634,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 		{
 			if(strcmp(files[i], fileNumsForMove[pathId]) == 0)
 			{
-				strncpy(fileWithNames[i], newPath, 1024);
+				strncpy(fileWithNames[i], newPath, 75);
 				char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
