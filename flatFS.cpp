@@ -24,9 +24,9 @@ char dataBaseLocation[];
 //varaiables for flatFs logic
 void *file_buffer;
 size_t file_size;
-char files[10024][75];
+char files[10024][300];
 int fileNums[10024];
-char fileWithNames[10024][75];
+char fileWithNames[10024][300];
 int num = 1;
 int totalfiles = 0;
 int totalfilenums = 0;
@@ -36,9 +36,9 @@ int fileReadCount = 0;
 int isFileFromCreate = 0;
 
 //arrays and integers for spliting the input string into key value pairs
-char fileNumsForMove[10024][75];
+char fileNumsForMove[10024][300];
 int fileNumsForMoveCount = 0;
-char querySpecFileName[75];
+char querySpecFileName[300];
 int splitKeyValuePairLimit = 0;
 char **splitKeyPath;
 char **splitValuePath;
@@ -151,20 +151,20 @@ static int do_readdir( const char *path, void *buffer, fuse_fill_dir_t filler, o
 //creating a file
 static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 {
-	char compareName[75];
-	strncpy(compareName, path , 75);
+	char compareName[300];
+	strncpy(compareName, path , 300);
 	if(findFiles(path, 0, 1) == 1 && isFileFromCreate == 1) // check already file exist
 	{
 		std::cout << "\nFile to touch already exist\n";
 		return -ENOSPC;
 	}
-	strncpy(fileWithNames[totalfiles], path , 75);
-	char fileName[75];
-	char attr[75];
-	char val[75];
+	strncpy(fileWithNames[totalfiles], path , 300);
+	char fileName[300];
+	char attr[300];
+	char val[300];
 	int n=0,l=0,fileNum;
 	
-		char fname[100];
+		char fname[300];
 		int x=0;
 		for(int w=0; w<sizeof(fname); w++)
 		{
@@ -176,7 +176,7 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 			x++;
 		}
 			fname[x] = NULL;
-		strncpy(inMemoryNames[totalfiles], fname, 100);
+		strncpy(inMemoryNames[totalfiles], fname, 300);
 		std::cout << "\nname: "	<< inMemoryNames[totalfiles];
 		std::cout << " " << totalfiles;
 
@@ -265,7 +265,7 @@ static int do_create (const char *path, mode_t mode, struct fuse_file_info *fi )
 	fileName[u] = '\0';
 	//
 
-	strncpy(files[totalfiles], fileName , 75);
+	strncpy(files[totalfiles], fileName , 300);
 	totalfiles++;
 
 	int w = n+l+2;
@@ -396,7 +396,7 @@ static int do_rename (const char *path1, const char *path2)
 	}
 	else if(path1[1] != NULL && path2[1] == '<') //if it is a file speac and a replace spec
 	{
-		char pathToCheck[75];
+		char pathToCheck[300];
 		int qw = 0;
 		pathToCheck[qw] = '/';
 		qw++;
@@ -424,8 +424,8 @@ static int do_rename (const char *path1, const char *path2)
 			}
 			else
 			{
-				char pathToDelete[75];
-				char pathToAdd[75];
+				char pathToDelete[300];
+				char pathToAdd[300];
 				qw = 0;
 				pathToDelete[qw] = '/';
 				qw++;
@@ -453,7 +453,7 @@ static int do_rename (const char *path1, const char *path2)
 				{
 					if(strcmp(files[i], fileNumsForMove[fileNumsForMoveCount]) == 0)
 					{
-						strncpy(fileWithNames[i], pathToAdd, 75);
+						strncpy(fileWithNames[i], pathToAdd, 300);
 		char fname[100];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
@@ -588,7 +588,7 @@ int getDataFromSQL()
 
 				for(int jj=1; jj<=countglobal; jj++) //locating all key value pairs
 				{
-	char fileNumName[75];
+	char fileNumName[300];
 	static int file_counter = 0;
 
 	
