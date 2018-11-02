@@ -1,7 +1,7 @@
 
 //find files in the database
-char inMemoryKey[10024][75];
-char inMemoryValue[10024][75];
+char inMemoryKey[10024][300];
+char inMemoryValue[10024][300];
 int inMemoryLength = 0;
 
 //find files in the database
@@ -140,13 +140,13 @@ static int findFiles(const char *path, int isQuerySpec, int isFileExist)
 				}
 				if(iterationCount == comlimit && isQuerySpec == 1 && isFileExist == 0) // save file in a array if it is a query spec
 				{
-					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 75);
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 300);
 					fileNumsForMoveCount++;
 				}
 				else if(iterationCount == comlimit && isQuerySpec == 0 &&
 				inMemoryLength == comlimit && isFileExist == 0) // save file in a array if it is not a query spec
 				{
-					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 75);
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 300);
 				}
 				inMemoryLength = 0;
 			}
@@ -166,8 +166,8 @@ static int getFileNameForQuerySpec(int pathId)
 	{
 		if(strcmp(fileNumsForMove[pathId], files[i]) == 0)
 		{
-			strncpy(querySpecFileName, fileWithNames[i], 75);
-		char fname[100];
+			strncpy(querySpecFileName, fileWithNames[i], 300);
+		char fname[300];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
 		{
@@ -175,7 +175,7 @@ static int getFileNameForQuerySpec(int pathId)
 			x++;
 		}
 			fname[x] = NULL;
-		strncpy(inMemoryNames[i], fname, 100);
+		strncpy(inMemoryNames[i], fname, 300);
 		}
 	}
 }
@@ -183,7 +183,7 @@ static int getFileNameForQuerySpec(int pathId)
 //check file already exist for add spec
 static int checkFileExistForAddSpec(const char *oldpath, const char *newpath, int pathId)
 {
-	char compareName[75];
+	char compareName[300];
 	int len = 0;
 	compareName[len] = '/';
 	len++;
@@ -210,8 +210,8 @@ static int checkFileExistForAddSpec(const char *oldpath, const char *newpath, in
 	{
 		if(strcmp(files[i], fileNumsForMove[pathId]) == 0)
 		{
-			strncpy(fileWithNames[i], compareName, 75);
-		char fname[100];
+			strncpy(fileWithNames[i], compareName, 300);
+		char fname[300];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
 		{
@@ -219,7 +219,7 @@ static int checkFileExistForAddSpec(const char *oldpath, const char *newpath, in
 			x++;
 		}
 			fname[x] = NULL;
-		strncpy(inMemoryNames[i], fname, 100);
+		strncpy(inMemoryNames[i], fname, 300);
 			break;
 		}
 	}
@@ -371,7 +371,7 @@ static int checkSpecExistForAddSpec(const char *oldpath, const char *newpath)
 	}
 	pathLimit = splitKeyValuePairLimit;
 
-	char trimNewPath[75];
+	char trimNewPath[300];
 	int we=0;
 	trimNewPath[we] = '/';
 	we++;
@@ -451,7 +451,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 	char **keyPath;
 	char **valuePath;
 	int pathLimit;
-	char pathToSend[75];
+	char pathToSend[300];
 	char **keyPathDelete;
 	char **valuePathDelete;
 	int pathDeleteLimit;
@@ -578,7 +578,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 	else
 	{
 		iterationCount = 0;
-		char newPath[75];
+		char newPath[300];
 		int newSpecLimit = 0;
 
 		newPath[newSpecLimit] = '/';
@@ -635,8 +635,8 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 		{
 			if(strcmp(files[i], fileNumsForMove[pathId]) == 0)
 			{
-				strncpy(fileWithNames[i], newPath, 75);
-				char fname[100];
+				strncpy(fileWithNames[i], newPath, 300);
+				char fname[300];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
 		{
@@ -644,7 +644,7 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 			x++;
 		}
 			fname[x] = NULL;
-		strncpy(inMemoryNames[i], fname, 100);
+		strncpy(inMemoryNames[i], fname, 300);
 				break;
 			}
 		}
@@ -656,9 +656,9 @@ static int checkFileExistForDeleteSpec(const char *path, const char *deletePath,
 //add or delete file spec
 static int addOrDeleteFileSpec(const char *path, int isDeleteSpec, int pathId)
 {
-	char fileName[75];//initialize variables
-	char attr[75];
-	char val[75];
+	char fileName[300];//initialize variables
+	char attr[300];
+	char val[300];
 	int n=0,l=0,fileNum;
 	for(int i=2; i<strlen(path); i++) //count key,value pairs to add or delete
 	{
