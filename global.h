@@ -9,11 +9,11 @@ enum { //enum to represent each type of file command
 	FILE_MOVE
 };
 
-extern char dataBaseLocation[75]; //store database location
+extern char dataBaseLocation[300]; //store database location
 extern size_t file_size; //file size variable
-extern char files[10024][75]; //variables to represent a file
+extern char files[10024][300]; //variables to represent a file
 extern int fileNums[10024];
-extern char fileWithNames[10024][75];
+extern char fileWithNames[10024][300];
 extern int num;
 extern int totalfilenums;
 extern int totalfiles;
@@ -22,9 +22,9 @@ extern int isFile;
 extern int fileReadCount;
 extern int isFileFromCreate;
 
-extern char fileNumsForMove[10024][75]; //variables to perform query specs
+extern char fileNumsForMove[10024][300]; //variables to perform query specs
 extern int fileNumsForMoveCount;
-extern char querySpecFileName[75];
+extern char querySpecFileName[300];
 extern int splitKeyValuePairLimit;
 extern char **splitKeyPath;
 extern char **splitValuePath;
