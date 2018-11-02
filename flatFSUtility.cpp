@@ -140,12 +140,13 @@ static int findFiles(const char *path, int isQuerySpec, int isFileExist)
 				}
 				if(iterationCount == comlimit && isQuerySpec == 1 && isFileExist == 0) // save file in a array if it is a query spec
 				{
-					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 24);
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 75);
 					fileNumsForMoveCount++;
 				}
-				else if(iterationCount == comlimit && isQuerySpec == 0 && isFileExist == 0) // save file in a array if it is not a query spec
+				else if(iterationCount == comlimit && isQuerySpec == 0 &&
+				inMemoryLength == comlimit && isFileExist == 0) // save file in a array if it is not a query spec
 				{
-					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 24);
+					strncpy(fileNumsForMove[fileNumsForMoveCount], files[i] , 75);
 				}
 				inMemoryLength = 0;
 			}
