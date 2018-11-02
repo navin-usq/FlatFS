@@ -454,7 +454,7 @@ static int do_rename (const char *path1, const char *path2)
 					if(strcmp(files[i], fileNumsForMove[fileNumsForMoveCount]) == 0)
 					{
 						strncpy(fileWithNames[i], pathToAdd, 300);
-		char fname[100];
+		char fname[300];
 		int x=0;
 		for(int wx=1;fileWithNames[i][wx]!=NULL;wx++)
 		{
