@@ -1,4 +1,4 @@
-char inMemoryNames[10024][100];
+char inMemoryNames[10024][300];
 
 static int file_type(const char *path) //function to find type of user file command
 {
