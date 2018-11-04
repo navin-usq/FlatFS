@@ -1,0 +1,37 @@
+touch unit1:change1
+
+ls '?'
+
+mv 'unit1:change1' '+unit2:change2'
+
+mv 'unit1:change1,unit2:change2' '_unit1:change1'
+
+mv 'unit2:change2' '<unit1:change1,unit2:change2'
+
+touch 'unit2:change2'
+
+error case: touch 'unit2:change2'
+
+error case: touch 'unit1:change1,unit2:change2'
+
+error case: mv 'unit2:change2' '+unit2:change2'
+
+error case: mv 'unit2:change2' '_unit2:change2'
+
+error case: mv 'unit2:change2' '+unit1:change1'
+
+error case: mv 'unit1:change1,unit2:change2' '_unit1:change1'
+
+error case: mv 'unit1:change1,unit2:change2' '<unit1:change1'
+
+error case: mv 'unit2:change2' '<unit2:change2'
+
+
+mv '?unit2:change2' '+unit1:change1,unit3:change3'
+
+mv '?unit2:change2' '_unit3:change3'
+
+
+
+
+
